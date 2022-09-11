@@ -1,0 +1,58 @@
+#include <ESP8266WebServer.h>
+
+const char* ssid = "koneksi";
+const char* password = "12345678";
+
+const byte relay1 = D5;
+const byte relay2 = D2; 
+
+ESP8266WebServer server(80);
+
+void handleOn() {
+	Serial.print("OKE RELAY");
+	digitalWrite(relay1, !digitalRead(relay1));
+	server.send(200);
+}
+
+void handleOn() {
+	Serial.print("OKE RELAY");
+	digitalWrite(relay2, !digitalRead(relay2));
+	server.send(200);
+}
+
+void handleNotFound() {
+	Serial.print("ERROR");
+	String message = "File not found\n\n";
+	server.send(200);
+}
+
+void setup() {
+	Serial.begin(115200);
+	WiFi.disconnect();
+	Wifi.softAP(ssid, password);
+	WiFi.setOutputPower(20.5);
+
+	pinMode(relay1, OUTPUT);
+	pinMode(relay2, OUTPUT);
+
+	digitalWrite(relay1, LOW);
+	digitalWrite(relay2, LOW);
+
+	server.on("/off", handleOn);
+	server.on("/on", handleOff);
+
+	server.onNotFound(handleNotFound);
+
+	server.begin();
+
+	Serial.println("HTTP server started);
+	
+	Serial.println(ssid);
+	IPAddress myIP = WiFi.softAPIP();
+	Serial.print("AP IP address: ");
+	Serial.println(myIP);
+}
+
+void loop() {
+	server.handleClient();
+}
