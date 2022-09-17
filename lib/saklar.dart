@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 
 class Saklar extends StatefulWidget {
@@ -10,39 +9,47 @@ class Saklar extends StatefulWidget {
 }
 
 class _SaklarState extends State<Saklar> {
+  bool isActive = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: const Text('Home'),
+        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
               child: SizedBox(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ElevatedButton(
+                    MaterialButton(
+                      color: isActive ? Colors.blue : Colors.red,
+                      shape: const CircleBorder(),
                       onPressed: () {
-                        nyala();
+                        setState(() {
+                          isActive = !isActive;
+                          if (isActive == false) {
+                            // padam();
+                            print('padam');
+                          } else {
+                            // nyala();
+                            print('nyala');
+                          }
+                        });
                       },
-                      child: const Text(
-                        'ON',
-                        style: TextStyle(fontSize: 24),
+                      child: Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text(
+                          isActive ? 'ON' : 'OFF',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        mati();
-                      },
-                      child: const Text(
-                        'OFF',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ),
+                    )
                   ],
                 ),
               ),
@@ -58,7 +65,7 @@ Future nyala() async {
   print(res);
 }
 
-Future mati() async {
+Future padam() async {
   var url = Uri.https('192.168.4.1', '/off');
   http.Response res = await http.get(url);
   print(res);

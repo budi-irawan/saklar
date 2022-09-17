@@ -6,24 +6,19 @@ const char* password = "12345678";
 
 ESP8266WebServer server(80);
 
-const byte relay1 = D5;
-const byte relay2 = D2; 
-
+uint8_t pinLED = D5;
+bool statusLED = LOW;
 
 void setup() {
 	Serial.begin(115200);
 	WiFi.disconnect();
-	Wifi.softAP(ssid, password);
+	WiFi.softAP(ssid, password);
 	WiFi.setOutputPower(20.5);
 
-	pinMode(relay1, OUTPUT);
-	pinMode(relay2, OUTPUT);
+	pinMode(pinLED, OUTPUT);
 
-	digitalWrite(relay1, LOW);
-	digitalWrite(relay2, LOW);
-
-	server.on("/off", handleOn);
-	server.on("/on", handleOff);
+	server.on("/off", handleOff);
+	server.on("/on", handleOn);
 
 	server.onNotFound(handleNotFound);
 
@@ -39,14 +34,14 @@ void setup() {
 
 void handleOn() {
 	Serial.print("OKE RELAY");
-	digitalWrite(relay1, !digitalRead(relay1));
-	server.send(200);
+	statusLED = HIGH;
+	server.send(200, statusLED);
 }
 
 void handleOff() {
 	Serial.print("OKE RELAY");
-	digitalWrite(relay2, !digitalRead(relay2));
-	server.send(200);
+	statusLED = LOW;
+	server.send(200, statusLED);
 }
 
 void handleNotFound() {
@@ -57,4 +52,9 @@ void handleNotFound() {
 
 void loop() {
 	server.handleClient();
+	if(statusLED) {
+		digitalWrite(pinLED, HIGH);
+	} else {
+		digitalWrite(pinLED, LOW);
+	}
 }
